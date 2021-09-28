@@ -1,0 +1,50 @@
+SET check_function_bodies = false;
+CREATE SCHEMA [IF NOT EXISTS] reviews;
+
+CREATE TABLE reviews(
+  id SERIAL,
+  product_id INT NOT NULL,
+  date timestamp without time zone NOT NULL,
+  title varchar(50) NOT NULL,
+  body varchar(4000) NOT NULL,
+  recommended boolean DEFAULT false,
+  rating smallint(6) NOT NULL,
+  reported boolean DEFAULT false,
+  photos varchar(2000)[],
+  characteristics jsonb,
+  users_id INT NOT NULL,
+  PRIMARY KEY(id),
+  CONSTRAINT users_reviews
+    FOREIGN KEY (users_id)
+      REFERENCES users (id),
+  CONSTRAINT product_reviews
+    FOREIGN KEY (product_id)
+      REFERENCES products (id)
+);
+
+CREATE TABLE users(
+  id SERIAL,
+  username varchar(50) UNIQUE,
+  email varchar(100) UNIQUE,
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE responses(
+  id SERIAL,
+  body text NOT NULL,
+  users_id INT,
+  reviews_id INT,
+  PRIMARY KEY(id),
+  CONSTRAINT users_responses
+    FOREIGN KEY (users_id)
+      REFERENCES users (id),
+  CONSTRAINT reviews_responses
+    FOREIGN KEY (reviews_id)
+      REFERENCES reviews (id)
+);
+
+CREATE TABLE products(
+  id SERIAL,
+  PRIMARY KEY(id)
+);
+

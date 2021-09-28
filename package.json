@@ -1,0 +1,19 @@
+{
+  "name": "reviews",
+  "version": "1.0.0",
+  "description": "SDC reviews API service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Opulent-Owl/reviews.git"
+  },
+  "author": "bry",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Opulent-Owl/reviews/issues"
+  },
+  "homepage": "https://github.com/Opulent-Owl/reviews#readme"
+}
