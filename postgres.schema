@@ -4,41 +4,56 @@ CREATE SCHEMA [IF NOT EXISTS] reviews;
 CREATE TABLE reviews(
   id SERIAL,
   product_id INT NOT NULL,
+  review_photos_id INT,
   date timestamp without time zone NOT NULL,
-  title varchar(50) NOT NULL,
+  summary varchar(50) NOT NULL, //is title
   body varchar(4000) NOT NULL,
   recommended boolean DEFAULT false,
   rating smallint(5) NOT NULL,
   reported boolean DEFAULT false,
-  photos varchar(2000)[],
-  // characteristics jsonb,
+  helpfulness INT DEFAULT 0,
+  reviwer_name varchar(100) NOT NULL,  //future: users_id
+  reviewer_email varchar(200),
+  response varchar(4000) DEFAULT NULL, // future: response_id
+  PRIMARY KEY(id),
+  CONSTRAINT product_reviews
+    FOREIGN KEY (product_id)
+      REFERENCES products (id),
+  CONSTRAINT photos_reviews
+    FOREIGN KEY (review_photos_id)
+      REFERENCES review_photos (id)
+);
+
+CREATE TABLE review_photos(
+  id SERIAL,
+  review_id INT NOT NULL,
+  url varchar(2000) DEFAULT NULL,
+  CONSTRAINT reviews_photos
+    FOREIGN KEY (review_id)
+      REFERENCES reviews (id)
+);
+
+CREATE TABLE review_specs(
+  id SERIAL,
+  review_id INT NOT NULL,
   fit decimal DEFAULT NULL,
   comfort decimal DEFAULT NULL,
   quality decimal DEFAULT NULL,
   length decimal DEFAULT NULL,
   size decimal DEFAULT NULL,
-
-  helpfulness INT DEFAULT 0,
-  users_id INT NOT NULL,
-  PRIMARY KEY(id),
-  CONSTRAINT users_reviews
-    FOREIGN KEY (users_id)
-      REFERENCES users (id),
-  CONSTRAINT product_reviews
-    FOREIGN KEY (product_id)
-      REFERENCES products (id)
+  CONSTRAINT reviews_specs
+    FOREIGN KEY (review_id)
+      REFERENCES reviews (id)
 );
 
-//CREATE STATISTICS avg_rating (dependencies) ON rating FROM reviews;
-
-CREATE TABLE users(
+// CREATE TABLE users( //future
   id SERIAL,
   username varchar(50) UNIQUE,
   email varchar(100) UNIQUE,
   PRIMARY KEY(id)
 );
 
-CREATE TABLE responses(
+// CREATE TABLE responses( //future: also extra
   id SERIAL,
   body text NOT NULL,
   users_id INT,
