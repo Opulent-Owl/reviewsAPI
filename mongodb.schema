@@ -38,13 +38,16 @@ var reviewSchema = mongoose.Schema({
         type: Number,
         default: null
     }],
-    responses: [{
-      body: {
-        type: String,
-        required: true
-      },
-      username: String
-    }],
+    responses: {
+      type: [{
+        body: {
+          type: String,
+          required: true
+        },
+        username: String
+        }],
+      default: null
+    },
     reviewer: [{
       username: {
         type: String,
