@@ -29,6 +29,8 @@ CREATE TABLE reviews(
       REFERENCES products (id)
 );
 
+//CREATE STATISTICS avg_rating (dependencies) ON rating FROM reviews;
+
 CREATE TABLE users(
   id SERIAL,
   username varchar(50) UNIQUE,
