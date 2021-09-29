@@ -4,8 +4,7 @@ CREATE SCHEMA [IF NOT EXISTS] reviews;
 CREATE TABLE reviews(
   id SERIAL,
   product_id INT NOT NULL,
-  review_photos_id INT,
-  date timestamp without time zone NOT NULL,
+  creation_date timestamp without time zone NOT NULL,
   summary varchar(50) NOT NULL, //is title
   body varchar(4000) NOT NULL,
   recommended boolean DEFAULT false,
@@ -19,9 +18,6 @@ CREATE TABLE reviews(
   CONSTRAINT product_reviews
     FOREIGN KEY (product_id)
       REFERENCES products (id),
-  CONSTRAINT photos_reviews
-    FOREIGN KEY (review_photos_id)
-      REFERENCES review_photos (id)
 );
 
 CREATE TABLE review_photos(
@@ -33,17 +29,23 @@ CREATE TABLE review_photos(
       REFERENCES reviews (id)
 );
 
-CREATE TABLE review_specs(
-  id SERIAL,
+CREATE TABLE review_characteristics(
+  id SERIAL PRIMARY KEY,
   review_id INT NOT NULL,
-  fit decimal DEFAULT NULL,
-  comfort decimal DEFAULT NULL,
-  quality decimal DEFAULT NULL,
-  length decimal DEFAULT NULL,
-  size decimal DEFAULT NULL,
+  characteristic_id INT NOT NULL,
+  score INT NOT NULL,
   CONSTRAINT reviews_specs
     FOREIGN KEY (review_id)
       REFERENCES reviews (id)
+);
+
+CREATE TABLE characteristics(
+  id SERIAL PRIMARY KEY,
+  product_id INT NOT NULL,
+  characteristic_name varchar(20) NOT NULL,
+  CONSTRAINT products_characteristics
+    FOREIGN KEY (product_id)
+      REFERENCES products (id)
 );
 
 // CREATE TABLE users( //future
