@@ -17,7 +17,7 @@ CREATE TABLE reviews(
   PRIMARY KEY(id),
   CONSTRAINT product_reviews
     FOREIGN KEY (product_id)
-      REFERENCES products (id),
+      REFERENCES products (id)
 );
 
 CREATE TABLE review_photos(
@@ -29,23 +29,23 @@ CREATE TABLE review_photos(
       REFERENCES reviews (id)
 );
 
-CREATE TABLE review_characteristics(
+CREATE TABLE review_characteristics( //association table
   id SERIAL PRIMARY KEY,
   review_id INT NOT NULL,
   characteristic_id INT NOT NULL,
   score INT NOT NULL,
-  CONSTRAINT reviews_specs
+  CONSTRAINT reviews_characteristics
     FOREIGN KEY (review_id)
       REFERENCES reviews (id)
 );
 
 CREATE TABLE characteristics(
   id SERIAL PRIMARY KEY,
-  product_id INT NOT NULL,
-  characteristic_name varchar(20) NOT NULL,
-  CONSTRAINT products_characteristics
-    FOREIGN KEY (product_id)
-      REFERENCES products (id)
+  review_id INT NOT NULL,
+  characteristic_name ENUM ('size', 'comfort', 'quality', 'length', 'fit'),
+  CONSTRAINT reviews_characteristics
+    FOREIGN KEY (review_id)
+      REFERENCES reviews (id)
 );
 
 // CREATE TABLE users( //future
