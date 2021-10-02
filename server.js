@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const cors = require('cors');
+const config = require('./config.js');
 const { Pool } = require('pg');
 
 app.use(express.json());
@@ -10,9 +11,9 @@ app.use(cors());
 const pool = new Pool({
   host: 'localhost',
   port: 5432,
-  user: 'bryanna',
-  password: 'ele6969doo',
-  database: 'reviews_api',
+  user: config.DB_USER,
+  password: config.DB_PASSWORD,
+  database: config.DB_NAME,
   idleTimeoutMillis: 50000,
 })
 
