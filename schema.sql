@@ -39,10 +39,10 @@ CREATE TABLE characteristic_reviews(
     FOREIGN KEY (characteristic_id)
       REFERENCES characteristics (id)
 );
-CREATE TYPE name AS ENUM ('Size', 'Comfort', 'Quality', 'Length', 'Fit');
+CREATE TYPE char_name AS ENUM ('Size', 'Fit', 'Comfort', 'Quality', 'Length', 'Width');
 
 CREATE TABLE characteristics(
   id SERIAL PRIMARY KEY,
   product_id INT NOT NULL,
-  name name
+  name char_name
 );
