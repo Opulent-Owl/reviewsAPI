@@ -52,18 +52,18 @@ app.get('/reviews/meta', (req, res) => {
   	1, SUM(CASE WHEN rating=1 THEN 1
                 ELSE null
            END),
-	  2, SUM(CASE WHEN rating=1 THEN 1
+	  2, SUM(CASE WHEN rating=2 THEN 1
                 ELSE null
            END),
-	  3, SUM(CASE WHEN rating=1 THEN 1
+	  3, SUM(CASE WHEN rating=3 THEN 1
                 ELSE null
            END),
-	  4, SUM(CASE WHEN rating=1 THEN 1
+	  4, SUM(CASE WHEN rating=4 THEN 1
                 ELSE null
            END),
-	  5, SUM(CASE WHEN rating=1 THEN 1
+	  5, SUM(CASE WHEN rating=5 THEN 1
                 ELSE null
-           END))) AS ratings
+           END))) as ratings
   FROM reviews
   WHERE product_id=$1
   ) AS ratings,
