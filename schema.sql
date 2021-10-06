@@ -46,3 +46,4 @@ CREATE TABLE characteristics(
   product_id INT NOT NULL,
   name char_name
 );
+

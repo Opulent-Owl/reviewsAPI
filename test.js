@@ -4,7 +4,7 @@ const request = require("supertest");
 const app = require("./app.js");
 
 const product_id = Math.floor(Math.random() * 1000000);
-const review_id = 1;
+const review_id = Math.floor(Math.random() * 1000000);
 
 let server;
 
@@ -53,9 +53,9 @@ describe(`Reviews API Request Times for a Product ID: ${product_id}`, () => {
   });
 
   // test("should return add new review POST request time", async () => {
-  //   var str = `/products/${product_id}/related`;
+  //   var str = `/reviews`;
   //   var start = performance.now();
-  //   const res = await request(app).get(str);
+  //   const res = await request(app).post(str);
   //   var end = performance.now();
   //   console.log(`Request time for POST review: ${end - start} ms`);
   //   expect(res.statusCode).toEqual(200);
