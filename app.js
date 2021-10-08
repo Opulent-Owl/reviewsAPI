@@ -16,14 +16,13 @@ const pool = new Pool({
   database: config.DB_NAME,
   idleTimeoutMillis: 50000,
 });
-//helpfulness > newest for RELEVANCE
-
 
 // ~ 10 - 15 seconds W/O index
 // ~ 400 ms with product_id reviews index
 // ~ 30 - 40 ms with remove left join + reviews_id index
-// GOAL: around 500req/second median time of 2ms, longest = 85ms
 app.get('/reviews', (req, res) => {
+  const sorting = {newest: ' date DESC ', helpful: ' helpfulness DESC '};
+  const sortBy = sorting[req.query.sort] || ' helpfulness DESC, date DESC ';
   pool.query(`SELECT
     reviews.id AS review_id,
     to_timestamp(reviews.date/1000)::date AS date,
@@ -43,16 +42,15 @@ app.get('/reviews', (req, res) => {
     WHERE reviews.product_id=$1
     AND reported=false
   GROUP By reviews.id
-  ORDER BY ${req.query.sort === 'newest' ? 'date' : 'helpfulness'} DESC
-  LIMIT $2
+  ORDER BY${sortBy}LIMIT $2
   OFFSET $3`, [req.query.product_id, req.query.count || 5, (req.query.page -1) * req.query.count || 1], (err, result) => {
     err ? res.status(418).send(err.message) :
       res.status(200).json({'results': result.rows});
   });
 });
 
-// ~ 24 seconds W/O indexes
-// ~ 3.5 seconds W indexes
+// ~ 24 seconds W/O index
+// ~ 3.5 seconds W reviews indexes
 // ~ 30 ms with remove inner join + characteristic_id index
 app.get('/reviews/meta', (req, res) => {
   pool.query(`SELECT * FROM
@@ -96,7 +94,7 @@ app.get('/reviews/meta', (req, res) => {
 });
 
 // ~ 44ms
-// ~ 10-15ms W index
+// ~ 10-15ms W helpfulness index
 app.put('/reviews/:review_id/helpful', (req, res) => {
   pool.query(`UPDATE reviews SET helpfulness=helpfulness+1 WHERE id=$1`, [req.params.review_id], (err, result) => {
     err ? res.status(418).send(err.message) :
@@ -112,9 +110,27 @@ app.put('/reviews/:review_id/report', (req, res) => {
   });
 });
 
-//still needs to put photos and characteristics
+// ~ 40ms
 app.post('/reviews', (req, res) => {
-  pool.query(`INSERT INTO reviews (product_id, rating, date, summary, body, recommend, reviewer_name, reviewer_email) VALUES ($1, $2, ${Date.now()}, $3, $4, $5, $6, $7)`, [req.body.product_id, req.body.rating, req.body.summary, req.body.body, req.body.recommend, req.body.name, req.body.email], (err, result) => {
+  const photos = req.body.photos;
+  const add_photos = photos.length === 0 ? '' :
+    ', add_photos AS (INSERT INTO reviews_photos(review_id, url) VALUES ' +
+    photos.map((url) => {
+      return `((SELECT id FROM add_review), '${url}')`
+      })
+    + ')';
+  const chars_scores = req.body.characteristics;
+  const add_chars_revs = Object.keys(chars_scores).length === 0 ? '' :
+    'INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ' +
+    Object.keys(chars_scores).map((id) => {
+      return `(${id}, (SELECT id FROM add_review), ${chars_scores[id]})`
+    });
+  pool.query(`WITH add_review AS (
+    INSERT INTO reviews (product_id, rating, date, summary, body, recommend, reviewer_name, reviewer_email)
+      VALUES ($1, $2, ${Date.now()}, $3, $4, $5, $6, $7)
+    RETURNING id)
+    ${add_photos}
+    ${add_chars_revs}`, [req.body.product_id, req.body.rating, req.body.summary, req.body.body, req.body.recommend, req.body.name, req.body.email], (err, result) => {
     err ? res.status(418).send(err.message) :
       res.status(201).json();
   });
